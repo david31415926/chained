@@ -1,0 +1,38 @@
+.message_holder {
+    width: 100%;
+    max-height: 50vh;
+    height: 50vh;
+    white-space: nowrap;
+    text-align: left;
+    border-radius: 1vh 1vh 1vh 1vh;
+    padding-top: 2.5vh;
+    color: white;
+    overflow-y: auto;
+}
+
+.application {
+    text-align: center;
+    margin: 5vh 0 10vh 0;
+    background-color: #424549;
+    border-radius: 1vh 1vh 1vh 1vh;
+}
+
+#notice {
+    color: white;
+    text-align: center;
+}
+
+@media (min-width: 992px) {
+    .application {
+        padding: 5vh 20vw 10vh 20vw;
+    }
+}
+body {
+    background: #202225;
+}
+#title {
+    color: white;
+    text-align: center;
+    padding-top: 5vh;
+}
+

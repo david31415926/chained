@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Flask_Chat_App</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <meta name="viewport" content="width=device-width, initial=scale=1">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css')  }}">
+    <link rel="shortcut icon" href="{{url_for('static', filename='favicon.ico')}}">
+</head>
+
+<body>
+    <h1 id="title">Chained</h1>
+    <div class="application">
+        <h3 style='color: #ccc;font-size: 30px;'>Welcome!</h3>
+        <div class="message_holder" id="msg"></div>
+        <form action="" method="POST">
+            <input type="text" class="username" placeholder="User Name" />
+            <input type="text" class="message" placeholder="Messages" />
+            <select id="lang">
+                <option value="en">English</option>
+                <option value="es">Spanish</option>
+                <option value="zh-CN">Chinese (Simplified)</option>
+                <option value="fr">French</option>
+                
+            </select>
+            <input type="submit" />
+        </form>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.0.4/socket.io.js"></script>
+    <script>
+        function updateScroll(){
+            var element = document.getElementById("msg");
+            element.scrollTop = element.scrollHeight;
+        }
+
+    </script>
+    <script type="text/javascript">
+        var socket = io();
+        socket.on('connect', function () {
+            socket.emit('message event', {
+                data: 'User Connected'
+            })
+            var form = $('form').on('submit', function (e) {
+                e.preventDefault()
+                let user_name = encodeURIComponent($('input.username').val()) //JSOn decode error if not URI encoded
+                let user_input = encodeURIComponent($('input.message').val())
+                let language = document.getElementById("lang").value
+                socket.emit('message event', {
+                    user_name: user_name,
+                    message: user_input,
+                    language: language
+                })
+                $('input.message').val('').focus()
+            })
+        })
+        socket.on('message response', function (msg) {
+            if (typeof msg.user_name !== 'undefined') {
+                $('h3').remove()
+                var language = document.getElementById("lang").value
+                var data = { language: language, message: msg.message, language_from: msg.language };
+                var send = document.location.href + "getmessage/" + JSON.stringify(data)
+
+                var xmlHttp = new XMLHttpRequest();
+                xmlHttp.open("GET", send, false);
+                xmlHttp.send(null);
+                var response = xmlHttp.responseText
+
+                var m = '<div><b style="color:white">' + msg.user_name + ': ' + JSON.parse(response)["message"] + '</div>'
+                var atBottom = false
+                var element = document.getElementById("msg");
+                if (element.scrollTop === (element.scrollHeight - element.offsetHeight)) {
+                    atBottom = true
+                }
+                $('div.message_holder').append(m)
+                if (atBottom === true) {
+                    updateScroll()
+                }
+            }
+        })
+    </script>
+</body>
+
+</html>
